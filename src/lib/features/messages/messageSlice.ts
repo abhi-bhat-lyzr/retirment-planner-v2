@@ -17,7 +17,7 @@ interface MessageState {
 const initialState: MessageState = {
   messages: [
     {
-      text: "Hello, I'm RetireWise, your retirement planning assistant. I'm here to help you plan for a secure financial future. What would you like to know about retirement planning?",
+      text: "Hello, I'm your retirement planning assistant. I'm here to help you plan for a secure financial future. What would you like to know about retirement planning?",
       isUser: false,
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",

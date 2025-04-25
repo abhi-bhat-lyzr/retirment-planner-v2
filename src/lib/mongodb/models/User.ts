@@ -62,7 +62,6 @@ const userSchema = new Schema<IUser>(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
     },
     healthcare_costs_estimate: {
       type: Number,

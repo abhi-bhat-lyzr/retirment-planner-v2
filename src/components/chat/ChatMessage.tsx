@@ -56,7 +56,7 @@ const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
               isUser ? "text-right" : "text-left"
             )}
           >
-            {isUser ? "You" : "RetireWise"} • {timestamp || "Just now"}
+            {isUser ? "You" : "Assistant"} • {timestamp || "Just now"}
           </span>
         </div>
       </div>

@@ -97,30 +97,27 @@ const ChatInterface = () => {
   const [updateInsights] = useUpdateInsightsMutation();
   const [updateUser] = useUpdateUserMutation();
 
- 
-
   useEffect(() => {
+    const handleInsightsUpdate = async (insights: any) => {
+      try {
+        const response = await updateInsights(insights).unwrap();
+        console.log("response", response);
+      } catch (error) {
+        console.error("Failed to update insights:", error);
+        toast.error("Failed to update insights");
+      }
+    };
 
-     const handleInsightsUpdate = async (insights: any) => {
-       try {
-         const response = await updateInsights(insights).unwrap();
-         console.log("response", response);
-       } catch (error) {
-         console.error("Failed to update insights:", error);
-         toast.error("Failed to update insights");
-       }
-     };
+    const handleUserUpdate = async (user: any) => {
+      try {
+        const response = await updateUser(user).unwrap();
+        console.log("response", response);
+      } catch (error) {
+        console.error("Failed to update user:", error);
+        toast.error("Failed to update user");
+      }
+    };
 
-     const handleUserUpdate = async (user: any) => {
-       try {
-         const response = await updateUser(user).unwrap();
-         console.log("response", response);
-       } catch (error) {
-         console.error("Failed to update user:", error);
-         toast.error("Failed to update user");
-       }
-     };
-     
     if (messageData && messageData.status === "completed") {
       const response = messageData.results[0].response;
       const data = JSON.parse(response);
@@ -155,40 +152,42 @@ const ChatInterface = () => {
       dispatch(setIsTyping(false));
       dispatch(clearJobId());
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageData, dispatch]);
 
   return (
-    <div className="flex flex-col h-[90vh]">
-      <div className="p-4 bg-muted/50 border-b">
+    <div className="flex flex-col h-full">
+      <div className="p-4 bg-muted/50 border-b shrink-0">
         <h2 className="text-xl font-bold">Chat with Lyzr Assistant</h2>
         <p className="text-sm text-muted-foreground">
           Ask questions about retirement planning
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4">
-        {messages.map((message: Message, index: number) => (
-          <ChatMessage
-            key={index}
-            message={message.text}
-            isUser={message.isUser}
-            timestamp={message.timestamp}
-          />
-        ))}
-        {isTyping && (
-          <div className="assistant-message chat-message animate-pulse">
-            <div className="flex gap-1">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-75"></div>
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-150"></div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="space-y-4">
+          {messages.map((message: Message, index: number) => (
+            <ChatMessage
+              key={index}
+              message={message.text}
+              isUser={message.isUser}
+              timestamp={message.timestamp}
+            />
+          ))}
+          {isTyping && (
+            <div className="assistant-message chat-message animate-pulse">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-75"></div>
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-150"></div>
+              </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      <div className="p-4 pb-10 border-t bg-background">
+      <div className="px-4 py-4 pb-14 border-t bg-background shrink-0">
         <div className="flex gap-2">
           <Input
             placeholder="Ask about retirement planning..."

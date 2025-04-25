@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     }
 
     console.log("prompt", prompt);
-    processJob(jobId, prompt, userId, token, userId + "---" + token);
+    processJob(jobId, prompt, userId, token, userId + "-*-" + token);
 
     return NextResponse.json({
       status: "success",

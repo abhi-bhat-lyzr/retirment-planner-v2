@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useAppDispatch } from "@/lib/hook";
+import { useAppDispatch, useAppSelector } from "@/lib/hook";
 import { useGetInsightsQuery } from "@/lib/features/insights/insightsAPI";
 import { useGetUserQuery } from "@/lib/features/user/userAPI";
 import { setInsights } from "@/lib/features/insights/insightsSlice";
@@ -12,7 +12,7 @@ import ProfileCompletion from "./ProfileCompletion";
 
 const InsightsLoadingSkeleton = () => {
   return (
-    <div className="h-[90vh] flex flex-col space-y-4">
+    <div className="h-full flex flex-col space-y-4">
       <div className="p-4 bg-muted/50 border-b">
         <Skeleton className="h-7 w-48 mb-2" />
         <Skeleton className="h-4 w-72" />
@@ -37,38 +37,78 @@ const InsightsLoadingSkeleton = () => {
 
 const InsightsPanel = () => {
   const dispatch = useAppDispatch();
+  const { insights } = useAppSelector((state) => state.insights);
+  const { user_inputs } = useAppSelector((state) => state.user);
 
-  const { data: fetchedInsights, isLoading: isInsightsLoading } =
-    useGetInsightsQuery(undefined);
-  const { data: fetchedUser, isLoading: isUserLoading } =
-    useGetUserQuery(undefined);
+  const {
+    data: fetchedInsights,
+    isLoading: isInsightsLoading,
+    refetch: refetchInsights,
+  } = useGetInsightsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  console.log("fetchedInsights", fetchedInsights);
-  console.log("fetchedUser", fetchedUser);
+  const {
+    data: fetchedUser,
+    isLoading: isUserLoading,
+    refetch: refetchUser,
+  } = useGetUserQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  // Refetch data when store state changes
+  useEffect(() => {
+    const hasStoreUserInputs = Object.keys(user_inputs || {}).length > 0;
+    const hasStoreInsights = Object.keys(insights || {}).length > 0;
+
+    // If store has user inputs but API doesn't, refetch user
+    if (hasStoreUserInputs && !fetchedUser) {
+      refetchUser();
+    }
+
+    // If store has insights but API doesn't, refetch insights
+    if (hasStoreInsights && !fetchedInsights) {
+      refetchInsights();
+    }
+  }, [
+    user_inputs,
+    insights,
+    fetchedUser,
+    fetchedInsights,
+    refetchUser,
+    refetchInsights,
+  ]);
+
+  // Update store with API data
+  useEffect(() => {
+    if (fetchedInsights?.data) {
+      dispatch(setInsights(fetchedInsights.data));
+    }
+  }, [fetchedInsights, dispatch]);
 
   useEffect(() => {
-    if (fetchedInsights) {
-      dispatch(setInsights(fetchedInsights.data));
-      console.log("fetchedInsights", fetchedInsights);
-    }
-
     if (fetchedUser) {
-      console.log("updating user inputs", fetchedUser);
       dispatch(updateUserInputs(fetchedUser));
     }
-  }, [fetchedInsights, fetchedUser, dispatch]);
+  }, [fetchedUser, dispatch]);
 
   if (isInsightsLoading || isUserLoading) {
     return <InsightsLoadingSkeleton />;
   }
 
+  const hasUserInputs = Object.keys(user_inputs || {}).length > 0;
+  const hasInsights = Object.keys(insights || {}).length > 0;
+
   return (
-    <div className="h-[90vh] flex flex-col">
-      {fetchedUser && !fetchedInsights && <ProfileCompletion />}
-      {fetchedUser && fetchedInsights && (
-        <>
+    <div className="h-full flex flex-col">
+      {hasUserInputs && hasInsights ? (
+        <div className="flex-1 overflow-y-auto">
           <Insights />
-        </>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <ProfileCompletion />
+        </div>
       )}
     </div>
   );
