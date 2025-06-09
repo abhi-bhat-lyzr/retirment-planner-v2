@@ -62,7 +62,9 @@ const retirementInsightsSchema = new Schema<IRetirementInsights>(
       },
       projected_current_retirement_savings: {
         type: Number,
-        required: [true, "Projected retirement savings is required"],
+      },
+      projected_retirement_savings: {
+        type: Number,
       },
       monthly_contribution_needed: {
         type: Number,

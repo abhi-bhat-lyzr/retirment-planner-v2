@@ -49,6 +49,32 @@ const Overview = () => {
         <CardHeader className="p-4 pb-2">
           <div className="flex items-start justify-between">
             <div>
+              <CardTitle className="text-lg">Savings Gap</CardTitle>
+              <CardDescription>Savings gap</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="space-y-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold">
+                {
+                  insights?.savings_gap
+                    ?.toFixed(2)
+                }
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {insights?.recommended_savings_rate?.message}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="insight-card">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-start justify-between">
+            <div>
               <CardTitle className="text-lg">Monthly Income Needed</CardTitle>
               <CardDescription>Estimated for your retirement</CardDescription>
             </div>

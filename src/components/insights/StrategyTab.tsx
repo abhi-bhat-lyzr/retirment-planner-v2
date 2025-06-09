@@ -1,11 +1,40 @@
-import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { useAppSelector } from '@/lib/hook'
+"use client";
+
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { useAppSelector } from "@/lib/hook";
+import { Cell, LabelList, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 const StrategyTab = () => {
   const { insights } = useAppSelector((state) => state.insights);
 
-  console.log("insights", insights);
+  const assetAllocationData = insights?.asset_allocation
+    ? [
+        {
+          name: "Stocks",
+          value: insights.asset_allocation.stocks,
+          color: "hsl(var(--chart-1))",
+        },
+        {
+          name: "Bonds",
+          value: insights.asset_allocation.bonds,
+          color: "hsl(var(--chart-2))",
+        },
+        {
+          name: "Cash",
+          value: insights.asset_allocation.cash,
+          color: "hsl(var(--chart-3))",
+        },
+      ]
+    : [];
+
   return (
     <div className="space-y-4">
       <Card className="insight-card">
@@ -29,64 +58,44 @@ const StrategyTab = () => {
         </CardContent>
       </Card>
 
-      <Card className="insight-card">
-        <CardHeader className="p-4 pb-2">
-          <CardTitle className="text-lg">Asset Allocation</CardTitle>
-          <CardDescription>Your current investment mix</CardDescription>
+      <Card className="flex flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Asset Allocation</CardTitle>
         </CardHeader>
 
-        <CardContent className="p-4 pt-0">
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm">Stocks</span>
-                <span className="text-sm font-medium">
-                  {insights?.asset_allocation?.stocks}%
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="bg-blue-500 h-full rounded-full"
-                  style={{ width: "70%" }}
-                ></div>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm">Bonds</span>
-                <span className="text-sm font-medium">
-                  {insights?.asset_allocation?.bonds}%
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="bg-green-500 h-full rounded-full"
-                  style={{ width: "25%" }}
-                ></div>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm">Cash</span>
-                <span className="text-sm font-medium">
-                  {insights?.asset_allocation?.cash}%
-                </span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="bg-yellow-500 h-full rounded-full"
-                  style={{ width: "5%" }}
-                ></div>
-              </div>
-            </div>
+        <CardContent className="flex-1 pb-0">
+          <div className="w-full h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={assetAllocationData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {assetAllocationData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                  <LabelList
+                    dataKey="name"
+                    position="inside"
+                    fill="white"
+                    fontSize={12}
+                  />
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Your allocation is appropriate for your age and risk tolerance.
-          </p>
         </CardContent>
+        <CardFooter>
+          <p className="text-muted-foreground text-center w-full">Based on your financial details</p>
+        </CardFooter>
       </Card>
     </div>
   );
-}
+};
 
 export default StrategyTab;

@@ -38,12 +38,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [org, ] = useState<string | null>(null);
-  const [credits, ] = useState<number>(0);
+  const [org] = useState<string | null>(null);
+  const [credits] = useState<number>(0);
 
   const handleAuthFailure = () => {
     Cookies.remove("user_id");
     Cookies.remove("token");
+    localStorage.removeItem("_ms-mid");
+    localStorage.removeItem("_ms-mem");
     setIsAuthenticated(false);
     setUserId(null);
     setToken(null);
@@ -57,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { default: lyzr } = await import("lyzr-agent");
       const tokenData = (await lyzr.getKeys()) as unknown as TokenData[];
 
+      console.log("Token data", tokenData);
 
       if (tokenData && tokenData[0]) {
         Cookies.set("user_id", tokenData[0].user_id);
@@ -67,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserId(tokenData[0].user_id);
         setToken(tokenData[0].api_key);
       } else {
+        console.log("Token data not found hanlding the auth failure");
         handleAuthFailure();
       }
     } catch (err) {

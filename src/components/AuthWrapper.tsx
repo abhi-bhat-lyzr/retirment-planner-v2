@@ -33,7 +33,7 @@ export default function AuthWrapper({
     toast.error("Please login to continue");
     return (
       <div className="flex justify-center items-center h-screen">
-        <p>Error</p>
+        <p>Please login to continue</p>
       </div>
     );
   }

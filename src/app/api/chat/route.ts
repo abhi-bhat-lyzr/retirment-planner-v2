@@ -24,8 +24,7 @@ export async function POST(request: Request) {
         }
       );
     }
-    console.log("token", token);
-    console.log("userId", userId);
+
     const { message, user_inputs } = await request.json();
 
     if (!message) {
@@ -57,8 +56,12 @@ export async function POST(request: Request) {
       `;
     }
 
+    const sessionId = token + '-**-' + userId;
+    
     console.log("prompt", prompt);
-    processJob(jobId, prompt, userId, token, userId + "-*-" + token);
+    console.log("Session Id", sessionId);
+
+    processJob(jobId, prompt, userId, token, sessionId);
 
     return NextResponse.json({
       status: "success",
